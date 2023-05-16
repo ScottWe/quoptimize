@@ -1,0 +1,47 @@
+cabal-version:       2.2
+
+name:                Quoptimize
+version:             0.1.0.0
+synopsis:            Tools and utilities for mathematical optimization on a universal quantum computer.
+-- description:
+license:             MIT
+license-file:        LICENSE
+author:              Fahimeh Bayeh, Scott Wesley
+maintainer:          scott.wesley@dal.ca
+-- copyright:
+category:            Quantum
+build-type:          Simple
+extra-source-files:  README.md
+
+-----------------------------------------------------------------------------------------
+-- Main library.
+
+library
+  exposed-modules:     Quoptimize.CNF.Format
+                       Quoptimize.Hamiltonian.Format
+  build-depends:       base,
+  hs-source-dirs:      src/Quoptimize
+  default-language:    Haskell2010
+
+-----------------------------------------------------------------------------------------
+-- Executables.
+
+library QuoptimizeExe
+  exposed-modules:     QuoptimizeExe.CmdLnFlags
+                       QuoptimizeExe.CmdLnParser
+  build-depends:       base,
+                       cmdargs
+  hs-source-dirs:      src/QuoptimizeExe
+  default-language:    Haskell2010
+
+common basic-exe-props
+  hs-source-dirs:      exe
+  default-language:    Haskell2010
+  build-depends:       base,
+                       Quoptimize,
+                       QuoptimizeExe
+
+executable qaoa_builder
+  import:              basic-exe-props
+  main-is:             QAOABuilder/Main.hs
+  other-modules:       QAOABuilder.CmdLn
