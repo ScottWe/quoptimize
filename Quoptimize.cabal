@@ -45,3 +45,20 @@ executable qaoa_builder
   import:              basic-exe-props
   main-is:             QAOABuilder/Main.hs
   other-modules:       QAOABuilder.CmdLn
+
+-----------------------------------------------------------------------------------------
+-- Unit Testing.
+
+common basic-unit-test-props
+  hs-source-dirs:      test
+  default-language:    Haskell2010
+  build-depends:       base,
+                       test-framework,
+                       test-framework-hunit,
+                       HUnit,
+                       Quoptimize
+
+test-suite quoptimize-cnf-format-tests
+  import:              basic-unit-test-props
+  main-is:             Quoptimize-CNF-Format-Tests.hs
+  type:                exitcode-stdio-1.0
