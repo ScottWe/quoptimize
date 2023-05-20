@@ -28,11 +28,11 @@ test4 = TestCase (assertEqual "omitPolarity supports positive naturals."
 -----------------------------------------------------------------------------------------
 -- emptyCnfSat (on failure)
 
-test5 =  TestCase (assertEqual "emptyCnfSat requires positive values (1/2)."
+test5 = TestCase (assertEqual "emptyCnfSat requires positive values (1/2)."
                               (Nothing :: Maybe CNFSAT)
                               (emptyCnfSat 0))
 
-test6 =  TestCase (assertEqual "emptyCnfSat requires positive values (2/2)."
+test6 = TestCase (assertEqual "emptyCnfSat requires positive values (2/2)."
                               (Nothing :: Maybe CNFSAT)
                               (emptyCnfSat (-1)))
 

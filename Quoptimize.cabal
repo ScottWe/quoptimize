@@ -20,6 +20,7 @@ library
   exposed-modules:     Quoptimize.CNF.Format
                        Quoptimize.Hamiltonian.Format
   build-depends:       base,
+                       containers
   hs-source-dirs:      src/Quoptimize
   default-language:    Haskell2010
 
@@ -61,4 +62,9 @@ common basic-unit-test-props
 test-suite quoptimize-cnf-format-tests
   import:              basic-unit-test-props
   main-is:             Quoptimize-CNF-Format-Tests.hs
+  type:                exitcode-stdio-1.0
+
+test-suite quoptimize-hamiltonian-format-tests
+  import:              basic-unit-test-props
+  main-is:             Quoptimize-Hamiltonian-Format-Tests.hs
   type:                exitcode-stdio-1.0
