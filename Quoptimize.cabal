@@ -18,6 +18,7 @@ extra-source-files:  README.md
 
 library
   exposed-modules:     Quoptimize.CNF.Format
+                       Quoptimize.CNF.Language
                        Quoptimize.Hamiltonian.Format
   build-depends:       base,
                        containers
@@ -62,6 +63,11 @@ common basic-unit-test-props
 test-suite quoptimize-cnf-format-tests
   import:              basic-unit-test-props
   main-is:             Quoptimize-CNF-Format-Tests.hs
+  type:                exitcode-stdio-1.0
+
+test-suite quoptimize-cnf-language-tests
+  import:              basic-unit-test-props
+  main-is:             Quoptimize-CNF-Language-Tests.hs
   type:                exitcode-stdio-1.0
 
 test-suite quoptimize-hamiltonian-format-tests
