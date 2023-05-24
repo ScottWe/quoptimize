@@ -136,6 +136,41 @@ test24 = TestCase (assertEqual "addDisjunction rejects out-of-bounds literals (4
     where d = [Positive 0, Negative 3, Negative (-7), Positive 1]
 
 -----------------------------------------------------------------------------------------
+-- maxClauseLen
+
+disjunct4 = [Positive 0, Negative 1, Positive 2, Negative 0]
+
+cnf6 = fromJust $ addDisjunction disjunct4 cnf5
+
+test25 = TestCase (assertEqual "maxClauseLen works (1/7)."
+                               0
+                               (maxClauseLen empty3))
+
+test26 = TestCase (assertEqual "maxClauseLen works (2/7)."
+                               2
+                               (maxClauseLen cnf1))
+
+test27 = TestCase (assertEqual "maxClauseLen works (3/7)."
+                               2
+                               (maxClauseLen cnf2))
+
+test28 = TestCase (assertEqual "maxClauseLen works (4/7)."
+                               2
+                               (maxClauseLen cnf3))
+
+test29 = TestCase (assertEqual "maxClauseLen works (5/7)."
+                               2
+                               (maxClauseLen cnf4))
+
+test30 = TestCase (assertEqual "maxClauseLen works (6/7)."
+                               3
+                               (maxClauseLen cnf5))
+
+test31 = TestCase (assertEqual "maxClauseLen works (7/7)."
+                               4
+                               (maxClauseLen cnf6))
+
+-----------------------------------------------------------------------------------------
 -- Orchestrates tests.
 
 tests = hUnitTestToTests $ TestList [ TestLabel "omitPolarity_Neg_1" test1
@@ -162,6 +197,13 @@ tests = hUnitTestToTests $ TestList [ TestLabel "omitPolarity_Neg_1" test1
                                     , TestLabel "addDisjunction_OOB_2" test22
                                     , TestLabel "addDisjunction_OOB_3" test23
                                     , TestLabel "addDisjunction_OOB_4" test24
+                                    , TestLabel "maxClauseLen_1" test25
+                                    , TestLabel "maxClauseLen_2" test26
+                                    , TestLabel "maxClauseLen_3" test27
+                                    , TestLabel "maxClauseLen_4" test28
+                                    , TestLabel "maxClauseLen_5" test29
+                                    , TestLabel "maxClauseLen_6" test30
+                                    , TestLabel "maxClauseLen_7" test31
                                     ]
 
 main = defaultMain tests

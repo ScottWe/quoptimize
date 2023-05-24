@@ -7,6 +7,7 @@ module Quoptimize.CNF.Format
   , disjunctions
   , emptyCnfSat
   , literalCount
+  , maxClauseLen
   , omitPolarity
   ) where
 
@@ -27,12 +28,13 @@ omitPolarity (Negative x) = x
 -- * Constructors and Destructors for a CNF-SAT Encoding.
 
 -- | A data format for CNFSAT instances.
--- |
--- | Invariant: forall cnf of type CNFSAT:
--- |              forall disjunct in (disjunctions cnf):
--- |                forall atom in disjunct:
--- |                  0 <= (omitPolarity atom) < (literalCount cnf)
+--
+-- Invariant: forall cnf of type CNFSAT:
+--              forall disjunct in (disjunctions cnf):
+--                forall atom in disjunct:
+--                  0 <= (omitPolarity atom) < (literalCount cnf)
 data CNFSAT = CNFSAT { literalCount :: Int
+                     , maxClauseLen :: Int
                      , disjunctions :: [[Polarity Int]] 
                      } deriving (Show, Eq)
 
@@ -43,7 +45,7 @@ data CNFSAT = CNFSAT { literalCount :: Int
 emptyCnfSat :: Int -> Maybe CNFSAT
 emptyCnfSat litCt =
     if litCt > 0
-    then Just $ CNFSAT litCt []
+    then Just $ CNFSAT litCt 0 []
     else Nothing
 
 -------------------------------------------------------------------------------
@@ -63,7 +65,8 @@ checkDisjunction litCt = all f
 -- disjunctions in the old CNF-SAT problem. Otherwise, nothing is returned.
 addDisjunction :: [Polarity Int] -> CNFSAT -> Maybe CNFSAT
 addDisjunction []       cnf                      = Just cnf
-addDisjunction disjunct (CNFSAT litCt disjuncts) =
+addDisjunction disjunct (CNFSAT litCt maxLen disjuncts) =
     if checkDisjunction litCt disjunct
-    then Just $ CNFSAT litCt (disjunct:disjuncts)
+    then Just $ CNFSAT litCt (max maxLen curLen) (disjunct:disjuncts)
     else Nothing
+    where curLen = length disjunct
