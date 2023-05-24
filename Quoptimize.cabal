@@ -19,9 +19,15 @@ extra-source-files:  README.md
 library
   exposed-modules:     Quoptimize.CNF.Format
                        Quoptimize.CNF.Language
+                       Quoptimize.CNF.Parser
                        Quoptimize.Hamiltonian.Format
+  other-modules:       Quoptimize.CNF.Lexer
+  build-tool-depends:  happy:happy,
+                       alex:alex
   build-depends:       base,
-                       containers
+                       array,
+                       containers,
+                       filepath
   hs-source-dirs:      src/Quoptimize
   default-language:    Haskell2010
 
@@ -68,6 +74,11 @@ test-suite quoptimize-cnf-format-tests
 test-suite quoptimize-cnf-language-tests
   import:              basic-unit-test-props
   main-is:             Quoptimize-CNF-Language-Tests.hs
+  type:                exitcode-stdio-1.0
+
+test-suite quoptimize-cnf-parser-tests
+  import:              basic-unit-test-props
+  main-is:             Quoptimize-CNF-Parser-Tests.hs
   type:                exitcode-stdio-1.0
 
 test-suite quoptimize-hamiltonian-format-tests
