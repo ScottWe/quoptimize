@@ -5,6 +5,7 @@ import Test.Framework.Providers.HUnit
 import Test.HUnit
 import Data.Maybe
 import Quoptimize.CNF.Format
+import Quoptimize.CNF.Language
 
 -----------------------------------------------------------------------------------------
 -- omitPolarity
@@ -171,6 +172,57 @@ test31 = TestCase (assertEqual "maxClauseLen works (7/7)."
                                (maxClauseLen cnf6))
 
 -----------------------------------------------------------------------------------------
+-- fromDimacsFile
+
+pos1 = fromJust $ toPosInt 1
+pos2 = fromJust $ toPosInt 2
+pos3 = fromJust $ toPosInt 3
+pos4 = fromJust $ toPosInt 4
+neg1 = fromJust $ toNegInt (-1)
+neg2 = fromJust $ toNegInt (-2)
+neg3 = fromJust $ toNegInt (-3)
+neg4 = fromJust $ toNegInt (-4)
+
+dcnfsat1 = fromJust $ emptyCnfSat 1
+dcnfsat2 = fromJust $ addDisjunction [Positive 0] dcnfsat1
+
+test32 = TestCase (assertEqual "fromDimacsFile handles most trivial case."
+                               (Right dcnfsat2 :: Either DimacsError CNFSAT)
+                               (fromDimacsFile dimacs))
+    where dimacs = DimacsCNF pos1 pos1 [[PosLit pos1]]
+
+dcnfsat3 = fromJust $ emptyCnfSat 4
+dcnfsat4 = fromJust $ addDisjunction [Positive 2, Negative 0] dcnfsat3
+dcnfsat5 = fromJust $ addDisjunction [Negative 3, Negative 1, Positive 2] dcnfsat4
+dcnfsat6 = fromJust $ addDisjunction [Positive 3, Negative 2, Positive 1, Negative 0] dcnfsat5
+
+test33 = TestCase (assertEqual "fromDimacsFile handles non-trivial cases."
+                               (Right dcnfsat6 :: Either DimacsError CNFSAT)
+                               (fromDimacsFile dimacs))
+    where terms1 = [PosLit pos3, NegLit neg1]
+          terms2 = [NegLit neg4, NegLit neg2, PosLit pos3]
+          terms3 = [PosLit pos4, NegLit neg3, PosLit pos2, NegLit neg1]
+          dimacs = DimacsCNF pos4 pos3 [terms1, terms2, terms3]
+
+test34 = TestCase (assertEqual "fromDimacsFile detects out-of-bounds literals."
+                               (Left errmsg :: Either DimacsError CNFSAT)
+                               (fromDimacsFile dimacs))
+    where terms1 = [PosLit pos1]
+          terms2 = [NegLit neg4]
+          terms3 = [PosLit pos2]
+          dimacs = DimacsCNF pos3 pos3 [terms1, terms2, terms3]
+          errmsg = UndeclaredLitInClause 2
+
+test35 = TestCase (assertEqual "fromDimacsFile detects invalid disjunct counts."
+                               (Left errmsg :: Either DimacsError CNFSAT)
+                               (fromDimacsFile dimacs))
+    where terms1 = [PosLit pos1]
+          terms2 = [NegLit neg4]
+          terms3 = [PosLit pos2]
+          dimacs = DimacsCNF pos3 pos4 [terms1, terms2, terms3]
+          errmsg = WrongClauseCount 4 3
+
+-----------------------------------------------------------------------------------------
 -- Orchestrates tests.
 
 tests = hUnitTestToTests $ TestList [ TestLabel "omitPolarity_Neg_1" test1
@@ -204,6 +256,10 @@ tests = hUnitTestToTests $ TestList [ TestLabel "omitPolarity_Neg_1" test1
                                     , TestLabel "maxClauseLen_5" test29
                                     , TestLabel "maxClauseLen_6" test30
                                     , TestLabel "maxClauseLen_7" test31
+                                    , TestLabel "fromDimacsFile_Basic" test32
+                                    , TestLabel "fromDimacsFile_General" test33
+                                    , TestLabel "fromDimacsFile_OOB" test34
+                                    , TestLabel "fromDimacsFile_DisjunctCt" test35
                                     ]
 
 main = defaultMain tests

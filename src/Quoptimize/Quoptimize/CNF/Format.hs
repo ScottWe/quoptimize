@@ -2,14 +2,21 @@
 
 module Quoptimize.CNF.Format
   ( CNFSAT
+  , DimacsError(..)
   , Polarity(..)
   , addDisjunction
   , disjunctions
   , emptyCnfSat
+  , fromDimacsFile
   , literalCount
   , maxClauseLen
   , omitPolarity
   ) where
+
+-------------------------------------------------------------------------------
+-- * Import Section.
+
+import Quoptimize.CNF.Language
 
 -------------------------------------------------------------------------------
 -- * Constructors and Destructors for a Polarity Wrapper Type.
@@ -64,9 +71,52 @@ checkDisjunction litCt = all f
 -- CNF-SAT problem is returned by appending the new disjunction to the list of
 -- disjunctions in the old CNF-SAT problem. Otherwise, nothing is returned.
 addDisjunction :: [Polarity Int] -> CNFSAT -> Maybe CNFSAT
-addDisjunction []       cnf                      = Just cnf
+addDisjunction []       cnf                             = Just cnf
 addDisjunction disjunct (CNFSAT litCt maxLen disjuncts) =
     if checkDisjunction litCt disjunct
     then Just $ CNFSAT litCt (max maxLen curLen) (disjunct:disjuncts)
     else Nothing
     where curLen = length disjunct
+
+-------------------------------------------------------------------------------
+-- * Converting Raw DIMACS to CNFSAT.
+
+-- | Indicates why a DIMACS file could not be interpreted as a CNFSAT problem.
+data DimacsError = WrongClauseCount Int Int
+                 | UndeclaredLitInClause Int
+                 | UnexpectedSizeError
+                 deriving (Eq, Show)
+
+-- | Helper method to convert DimacsAtoms to CNFSAT polarized literals. There
+-- are two major differences. First is that DimacsAtoms are 1-indexed, whereas
+-- polarized literals are 0-indexed. Second is that DimacsAtoms are signed
+-- whereas the underlying integer of a polarized literal is non-negative.
+fromDimacsAtom :: DimacsAtom -> Polarity Int
+fromDimacsAtom (NegLit dlit) = Negative lit
+    where lit = negate $ fromNegInt dlit + 1
+fromDimacsAtom (PosLit dlit) = Positive lit
+    where lit = fromPosInt dlit - 1
+
+-- | Helper method to add a list of DimacAtom clauses to a CNFSAT encoding with
+-- the help of fromDimacsAtom. If a clause is rejected, then the index of the
+-- clause is returned.
+addDimacsDisjuncts :: Int -> [[DimacsAtom]] -> CNFSAT -> Either Int CNFSAT
+addDimacsDisjuncts _ []                   cnf = Right cnf
+addDimacsDisjuncts n (disjunct:disjuncts) cnf =
+    case addDisjunction (map fromDimacsAtom disjunct) cnf of
+        Just cnf' -> addDimacsDisjuncts (n + 1) disjuncts cnf'
+        Nothing   -> Left n
+
+-- | Takes as input a DimacsFile, and returns as output an equivalent CNFSAT
+-- problem. If conversion is not possible, then an erorr is returned instead.
+fromDimacsFile :: DimacsFile -> Either DimacsError CNFSAT
+fromDimacsFile (DimacsCNF litCt disjunctCt disjuncts) =
+    if expect /= actual
+    then Left $ WrongClauseCount expect actual
+    else case emptyCnfSat $ fromPosInt litCt of
+        Just cnf -> case addDimacsDisjuncts 1 disjuncts cnf of
+            Left n     -> Left $ UndeclaredLitInClause n
+            Right cnf' -> Right cnf' 
+        Nothing -> Left UnexpectedSizeError
+    where expect = fromPosInt disjunctCt
+          actual = length disjuncts
