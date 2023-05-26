@@ -21,6 +21,7 @@ import Quoptimize.CNF.Language
   , DimacsFile(..)
   , fromNegInt
   , fromPosInt
+  , toPosInt
   )
 
 -------------------------------------------------------------------------------
@@ -112,6 +113,18 @@ addDimacsDisjuncts n (disjunct:disjuncts) cnf =
         Just cnf' -> addDimacsDisjuncts (n + 1) disjuncts cnf'
         Nothing   -> Left n
 
+-- | Helper method to determine the index of a DIMACS atom
+getDimacsIndex :: DimacsAtom -> Int
+getDimacsIndex (NegLit dlit) = -(fromNegInt dlit)
+getDimacsIndex (PosLit dlit) = fromPosInt dlit
+
+-- | Helper method to determine the maximum literal index in use across all
+-- disjuctions in a CNF encoding.
+getMaxLitInDisjuncts :: [[DimacsAtom]] -> Int
+getMaxLitInDisjuncts = foldr f 0
+    where g atom     n = max n $ getDimacsIndex atom
+          f disjunct n = max n $ foldr g 0 disjunct
+
 -- | Takes as input a DimacsFile, and returns as output an equivalent CNFSAT
 -- problem. If conversion is not possible, then an erorr is returned instead.
 fromDimacsFile :: DimacsFile -> Either DimacsError CNFSAT
@@ -125,3 +138,11 @@ fromDimacsFile (DimacsCNF litCt disjunctCt disjuncts) =
         Nothing -> Left UnexpectedSizeError
     where expect = fromPosInt disjunctCt
           actual = length disjuncts
+fromDimacsFile (DimacsCNFMin disjuncts) =
+    case toPosInt $ getMaxLitInDisjuncts disjuncts of
+        Just litCt -> case emptyCnfSat $ fromPosInt litCt of
+            Just cnf -> case addDimacsDisjuncts 1 disjuncts cnf of
+                Left n     -> Left $ UndeclaredLitInClause n
+                Right cnf' -> Right cnf' 
+            Nothing -> Left UnexpectedSizeError
+        Nothing -> Left UnexpectedSizeError

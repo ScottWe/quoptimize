@@ -51,4 +51,6 @@ data DimacsAtom = PosLit PosInt
 -- | Represents a valid DIMACS file (from the perspective of types). This does
 -- not guarentee that the file has the correct number or clauses, nor does it
 -- guarentee that all literals are defined.
-data DimacsFile = DimacsCNF PosInt PosInt [[DimacsAtom]] deriving (Show, Eq)
+data DimacsFile = DimacsCNF PosInt PosInt [[DimacsAtom]]
+                | DimacsCNFMin [[DimacsAtom]]
+                deriving (Show, Eq)

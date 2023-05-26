@@ -22,7 +22,7 @@ cnf3 = [PosLit pos2, PosLit pos3]
 test_input_1 = "p cnf 1 1\n" ++
                "1 0"
 
-test1 = TestCase (assertEqual "parseDimacs handles the simplest valid program."
+test1 = TestCase (assertEqual "parseDimacs handles the simplest valid CNF case."
                               (Right res :: Either String DimacsFile)
                               (parseDimacs "fp" test_input_1))
     where res = DimacsCNF pos1 pos1 [cnf1]
@@ -31,7 +31,7 @@ test_input_2 = "p cnf 3 2\n" ++
                "1 2 -3 0\n" ++
                "2 3 0"
 
-test2 = TestCase (assertEqual "parseDimacs handles a non-trivial case."
+test2 = TestCase (assertEqual "parseDimacs handles a non-trivial CNF case."
                               (Right res :: Either String DimacsFile)
                               (parseDimacs "fp" test_input_2))
     where res = DimacsCNF pos3 pos2 [cnf2, cnf3]
@@ -98,6 +98,34 @@ test10 = TestCase (assertBool "parseDimacs detects zeros as literals."
                               (isError $ parseDimacs "fp" test_input_9))
 
 -----------------------------------------------------------------------------------------
+-- Passing CNF without headers
+
+test_input_11 = "1 0"
+
+test11 = TestCase (assertEqual "parseDimacs handles the simplest valid CNFMin file."
+                               (Right res :: Either String DimacsFile)
+                               (parseDimacs "fp" test_input_11))
+    where res = DimacsCNFMin [cnf1]
+
+test_input_12 = "1 2 -3 0\n" ++
+                "2 3 0"
+
+test12 = TestCase (assertEqual "parseDimacs handles a non-trivial valid CNFMin file."
+                                (Right res :: Either String DimacsFile)
+                                (parseDimacs "fp" test_input_12))
+    where res = DimacsCNFMin [cnf2, cnf3]
+
+test_input_13 = "c this is a comment\n\n\n" ++
+                "   c this is also a comment\n\n\n\n" ++
+                "1 2 -3 0\n" ++
+                "2 3 0\n"
+
+test13 = TestCase (assertEqual "parseDimacs handles CNFMin files with comments."
+                               (Right res :: Either String DimacsFile)
+                               (parseDimacs "fp" test_input_13))
+    where res = DimacsCNFMin [cnf2, cnf3]
+
+-----------------------------------------------------------------------------------------
 -- Orchestrates tests.
 
 tests = hUnitTestToTests $ TestList [ TestLabel "Trivial" test1
@@ -110,6 +138,9 @@ tests = hUnitTestToTests $ TestList [ TestLabel "Trivial" test1
                                     , TestLabel "Bad_Header" test8
                                     , TestLabel "Bad_EndOfClause" test9
                                     , TestLabel "Bad_ZeroLit" test10
+                                    , TestLabel "Trivial_CNFMin" test11
+                                    , TestLabel "General_CNFMin" test12
+                                    , TestLabel "Comments_CNFMin" test13
                                     ]
 
 main = defaultMain tests

@@ -24,6 +24,7 @@ import Quoptimize.CNF.Language
 %%
 
 Program : p cnf Size Size CnfBody     { DimacsCNF $3 $4 $5 }
+        | CnfBody                     { DimacsCNFMin $1 }
 
 Size    : sizeval                     { parsePosInt $1 }
 

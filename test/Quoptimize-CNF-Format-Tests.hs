@@ -172,7 +172,7 @@ test31 = TestCase (assertEqual "maxClauseLen works (7/7)."
                                (maxClauseLen cnf6))
 
 -----------------------------------------------------------------------------------------
--- fromDimacsFile
+-- fromDimacsFile (DimacsCNF)
 
 pos1 = fromJust $ toPosInt 1
 pos2 = fromJust $ toPosInt 2
@@ -223,6 +223,36 @@ test35 = TestCase (assertEqual "fromDimacsFile detects invalid disjunct counts."
           errmsg = WrongClauseCount 4 3
 
 -----------------------------------------------------------------------------------------
+-- fromDimacsFile (DimacsCNFMin)
+
+test36 = TestCase (assertEqual "fromDimacsFile handles CNFMin (1/4)."
+                               (Right dcnfsat2 :: Either DimacsError CNFSAT)
+                               (fromDimacsFile dimacs))
+    where dimacs = DimacsCNFMin [[PosLit pos1]]
+
+dcnfsat7 = fromJust $ addDisjunction [Positive 3] dcnfsat3
+
+test37 = TestCase (assertEqual "fromDimacsFile handles CNFMin (2/4)."
+                               (Right dcnfsat7 :: Either DimacsError CNFSAT)
+                               (fromDimacsFile dimacs))
+    where dimacs = DimacsCNFMin [[PosLit pos4]]
+
+dcnfsat8 = fromJust $ addDisjunction [Negative 3] dcnfsat3
+
+test38 = TestCase (assertEqual "fromDimacsFile handles CNFMin (3/4)."
+                               (Right dcnfsat8 :: Either DimacsError CNFSAT)
+                               (fromDimacsFile dimacs))
+    where dimacs = DimacsCNFMin [[NegLit neg4]]
+
+test39 = TestCase (assertEqual "fromDimacsFile handles CNFMin (4/4)."
+                               (Right dcnfsat6 :: Either DimacsError CNFSAT)
+                               (fromDimacsFile dimacs))
+    where terms1 = [PosLit pos3, NegLit neg1]
+          terms2 = [NegLit neg4, NegLit neg2, PosLit pos3]
+          terms3 = [PosLit pos4, NegLit neg3, PosLit pos2, NegLit neg1]
+          dimacs = DimacsCNFMin [terms1, terms2, terms3]
+
+-----------------------------------------------------------------------------------------
 -- Orchestrates tests.
 
 tests = hUnitTestToTests $ TestList [ TestLabel "omitPolarity_Neg_1" test1
@@ -260,6 +290,10 @@ tests = hUnitTestToTests $ TestList [ TestLabel "omitPolarity_Neg_1" test1
                                     , TestLabel "fromDimacsFile_General" test33
                                     , TestLabel "fromDimacsFile_OOB" test34
                                     , TestLabel "fromDimacsFile_DisjunctCt" test35
+                                    , TestLabel "fromDimacsFile_MinCNF_1" test36
+                                    , TestLabel "fromDimacsFile_MinCNF_2" test37
+                                    , TestLabel "fromDimacsFile_MinCNF_3" test38
+                                    , TestLabel "fromDimacsFile_MinCNF_4" test39
                                     ]
 
 main = defaultMain tests
