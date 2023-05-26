@@ -2,7 +2,9 @@
 --
 -- Adapted from: https://github.com/onestruggler/qasm-quipper/
 
-module Quoptimize.IOUtils
+{-# LANGUAGE TupleSections #-}
+
+module QuoptimizeExe.IOUtils
   ( readSrc
   , redirectStdout
   , setLocalToUtf8

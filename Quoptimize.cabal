@@ -37,6 +37,7 @@ library
 library QuoptimizeExe
   exposed-modules:     QuoptimizeExe.CmdLnFlags
                        QuoptimizeExe.CmdLnParser
+                       QuoptimizeExe.IOUtils
   build-depends:       base,
                        cmdargs,
                        directory
@@ -49,6 +50,11 @@ common basic-exe-props
   build-depends:       base,
                        Quoptimize,
                        QuoptimizeExe
+
+executable dimacs_reader
+  import:              basic-exe-props
+  main-is:             DimacsReader/Main.hs
+  other-modules:       DimacsReader.CmdLn
 
 executable qaoa_builder
   import:              basic-exe-props

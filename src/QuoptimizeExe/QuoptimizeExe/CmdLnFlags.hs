@@ -5,6 +5,7 @@
 module QuoptimizeExe.CmdLnFlags
   ( def
   , outFlags
+  , srcFlags
   ) where
 
 -------------------------------------------------------------------------------
@@ -22,6 +23,12 @@ import System.Console.CmdArgs
 
 -------------------------------------------------------------------------------
 -- * Input/Output Flags.
+
+-- | Returns the flags for the --src argument. The default value is taken as an
+-- argument, since flags are impure.
+srcFlags :: String -> String
+srcFlags x = x &= help "Input source (defaults to stdin)."
+               &= typFile
 
 -- | Returns the flags for the --out argument. The default value is taken as an
 -- argument, since flags are impure.
