@@ -2,7 +2,7 @@
 {
 module Quoptimize.CNF.Parser (parseDimacs) where
 
-import Data.Maybe
+import Data.Maybe (fromJust)
 import Quoptimize.CNF.Lexer
 import Quoptimize.CNF.Language
 }

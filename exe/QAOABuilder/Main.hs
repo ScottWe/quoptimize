@@ -1,4 +1,4 @@
--- | Command-line interface for Lattice Surgery Compiler pre-processing.
+-- | Command-line interface for QAOA circuit generation.
 
 module Main where
 

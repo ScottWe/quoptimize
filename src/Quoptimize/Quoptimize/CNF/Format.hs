@@ -17,6 +17,11 @@ module Quoptimize.CNF.Format
 -- * Import Section.
 
 import Quoptimize.CNF.Language
+  ( DimacsAtom(..)
+  , DimacsFile(..)
+  , fromNegInt
+  , fromPosInt
+  )
 
 -------------------------------------------------------------------------------
 -- * Constructors and Destructors for a Polarity Wrapper Type.
