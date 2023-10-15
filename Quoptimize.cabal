@@ -21,6 +21,7 @@ library
                        Quoptimize.CNF.Language
                        Quoptimize.CNF.Parser
                        Quoptimize.Hamiltonian.Format
+                       Quoptimize.Hamiltonian.Index
   other-modules:       Quoptimize.CNF.Lexer
   build-tool-depends:  happy:happy,
                        alex:alex
@@ -91,4 +92,9 @@ test-suite quoptimize-cnf-parser-tests
 test-suite quoptimize-hamiltonian-format-tests
   import:              basic-unit-test-props
   main-is:             Quoptimize-Hamiltonian-Format-Tests.hs
+  type:                exitcode-stdio-1.0
+
+test-suite quoptimize-hamiltonian-index-tests
+  import:              basic-unit-test-props
+  main-is:             Quoptimize-Hamiltonian-Index-Tests.hs
   type:                exitcode-stdio-1.0
