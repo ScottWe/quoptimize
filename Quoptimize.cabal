@@ -22,13 +22,19 @@ library
                        Quoptimize.CNF.Parser
                        Quoptimize.Hamiltonian.Format
                        Quoptimize.Hamiltonian.Index
+                       Quoptimize.Mixer.Init
+                       Quoptimize.Mixer.MixPhase
+                       Quoptimize.QAOA
+                       Quoptimize.Cost.CostPhase
   other-modules:       Quoptimize.CNF.Lexer
   build-tool-depends:  happy:happy,
                        alex:alex
   build-depends:       base,
                        array,
                        containers,
-                       filepath
+                       filepath,
+                       quipper,
+                       quipper-language
   hs-source-dirs:      src/Quoptimize
   default-language:    Haskell2010
 
@@ -97,4 +103,9 @@ test-suite quoptimize-hamiltonian-format-tests
 test-suite quoptimize-hamiltonian-index-tests
   import:              basic-unit-test-props
   main-is:             Quoptimize-Hamiltonian-Index-Tests.hs
+  type:                exitcode-stdio-1.0
+  
+test-suite quoptimize-initialization-tests
+  import:              basic-unit-test-props
+  main-is:             Quoptimize-Initialization-Tests.hs
   type:                exitcode-stdio-1.0
