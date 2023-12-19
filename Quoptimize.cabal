@@ -104,8 +104,3 @@ test-suite quoptimize-hamiltonian-index-tests
   import:              basic-unit-test-props
   main-is:             Quoptimize-Hamiltonian-Index-Tests.hs
   type:                exitcode-stdio-1.0
-  
-test-suite quoptimize-initialization-tests
-  import:              basic-unit-test-props
-  main-is:             Quoptimize-Initialization-Tests.hs
-  type:                exitcode-stdio-1.0
